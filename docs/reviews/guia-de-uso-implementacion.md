@@ -23,7 +23,7 @@ npx prisma generate
 
 # 4. Iniciar servidor
 npm run start:dev
-# → GraphQL en http://localhost:3000/graphql
+# → API Gateway GraphQL en http://localhost:4000/graphql
 ```
 
 ### App móvil (Expo)
@@ -33,15 +33,17 @@ cd vitalBite-movil-app
 
 npm install       # ya instalado expo-local-authentication y expo-notifications
 
-# Cambiar la IP del backend en src/lib/apolloClient.ts
-# Busca GRAPHQL_URL y reemplaza la IP por la de tu máquina en la red local
+# Cambiar la IP del API Gateway en src/constants/config.ts si se prueba
+# desde un dispositivo físico en otra red local
 
 npm start         # Expo dev server
 # Escanea el QR con Expo Go (solo para probar UI, sin push reales)
 # Para push reales: npx expo run:android o npx expo run:ios
 ```
 
-> **IP correcta**: La app se conecta por defecto a `192.168.1.148:3000`. Cámbiala a la IP de tu máquina (ej. `192.168.x.x:3000`). Ambos dispositivos deben estar en la misma red Wi-Fi.
+> **IP correcta**: La app se conecta por defecto al API Gateway en
+> `192.168.1.148:4000`. Cámbiala a la IP de tu máquina (ej.
+> `192.168.x.x:4000`). Ambos dispositivos deben estar en la misma red Wi-Fi.
 
 ---
 

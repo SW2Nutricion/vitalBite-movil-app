@@ -9,7 +9,7 @@
  * (`vitalBite-backend-ia/app/schemas/food_scan.py`).
  */
 
-import { IA_API_KEY, IA_API_V1, IA_BASE_URL, IA_IMAGE_MAX_BYTES } from '../constants/config';
+import { IA_FOOD_SCAN_URL, IA_HEALTH_URL, IA_IMAGE_MAX_BYTES } from '../constants/config';
 
 export type ScanMode = 'label' | 'plate';
 
@@ -131,10 +131,9 @@ export async function scanFood({
 
   let response: Response;
   try {
-    response = await fetch(`${IA_API_V1}/food-scan`, {
+    response = await fetch(IA_FOOD_SCAN_URL, {
       method: 'POST',
       headers: {
-        'X-API-Key': IA_API_KEY,
         Accept: 'application/json',
         // No fijar Content-Type: fetch añade el boundary del multipart.
       },
@@ -171,12 +170,12 @@ export interface IaHealth {
 /** Consulta el estado de salud del backend de IA (modelos cargados). */
 export async function checkIaHealth(): Promise<IaHealth> {
   try {
-    const res = await fetch(`${IA_API_V1}/health`, { headers: { Accept: 'application/json' } });
+    const res = await fetch(IA_HEALTH_URL, { headers: { Accept: 'application/json' } });
     if (!res.ok) throw new IaServiceError(`Health HTTP ${res.status}`, res.status);
     return (await res.json()) as IaHealth;
   } catch (e) {
     if (e instanceof IaServiceError) throw e;
-    throw new IaServiceError(`No se pudo contactar al backend de IA (${IA_BASE_URL}).`);
+    throw new IaServiceError('No se pudo contactar al servicio de IA a través del gateway.');
   }
 }
 

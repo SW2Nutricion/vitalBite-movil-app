@@ -1,12 +1,9 @@
 /**
  * Configuración de red de la app.
  *
- * - GRAPHQL_URL: API GraphQL del Core empresarial (NestJS).
- * - IA_BASE_URL: microservicio de IA (FastAPI, REST). Se invoca directamente
- *   desde el móvil para el escáner nutricional (CU9); REST es válido aquí por
- *   ser un servicio interno de inferencia (ver AGENTS.md).
- * - IA_API_KEY: clave que viaja en la cabecera `X-API-Key` (debe coincidir con
- *   `API_KEY` del `.env` del backend de IA).
+ * - GRAPHQL_URL: endpoint GraphQL del API Gateway.
+ * La aplicación móvil solo conoce la URL pública del API Gateway. Las URLs y
+ * credenciales de los microservicios son responsabilidad del gateway.
  *
  * ── Cómo cambiar entre desarrollo y producción ──────────────────────────────
  * Prioridad de selección del entorno:
@@ -20,9 +17,7 @@
  * Dev (LAN): para dispositivo físico usar la IP de la PC en la red local (misma
  * Wi-Fi). Emulador Android: 10.0.2.2 · Simulador iOS: localhost.
  *
- * ⚠️ El Core de producción es HTTP en claro (http://18.188.25.170). Android e
- * iOS bloquean cleartext en builds de release: ya se habilitó la excepción en
- * app.json (android.usesCleartextTraffic / iOS NSAllowsArbitraryLoads).
+ * El API Gateway centraliza el acceso al Core y a los demás microservicios.
  */
 
 // type AppEnv = 'development' | 'production';
@@ -43,31 +38,24 @@ function resolveEnv(): AppEnv {
 
 export const APP_ENV: AppEnv = resolveEnv();
 
-// IP de la PC servidora en la red local (dev: Core e IA en la misma máquina).
+// IP de la PC servidora en la red local (dev: API Gateway e IA en la misma máquina).
 const LAN_HOST = '192.168.1.148';
 
-const ENVIRONMENTS: Record<AppEnv, { GRAPHQL_URL: string; IA_BASE_URL: string }> = {
+const ENVIRONMENTS: Record<AppEnv, { API_BASE_URL: string }> = {
   development: {
-    GRAPHQL_URL: `http://${LAN_HOST}:3000/graphql`,
-    IA_BASE_URL: `http://${LAN_HOST}:8001`,
+    API_BASE_URL: `http://${LAN_HOST}:4000`,
   },
   production: {
-    // Core NestJS en EC2 — HTTP en claro (requiere cleartext en app.json).
-    GRAPHQL_URL: 'http://18.188.25.170/graphql',
-    // Backend IA en Cloud Run — HTTPS.
-    IA_BASE_URL: 'https://vitalbite-ia-808502475421.us-central1.run.app',
+    API_BASE_URL: 'https://api.vitalbite.com',
   },
 };
 
 const active = ENVIRONMENTS[APP_ENV];
 
-export const GRAPHQL_URL = active.GRAPHQL_URL;
-
-export const IA_BASE_URL = active.IA_BASE_URL;
-export const IA_API_V1 = `${IA_BASE_URL}/api/v1`;
-
-// Debe coincidir con API_KEY del .env del backend de IA.
-export const IA_API_KEY = 'vitalbite_ia_secret_key_dev_change_in_prod';
+export const API_BASE_URL = active.API_BASE_URL;
+export const GRAPHQL_URL = `${API_BASE_URL}/graphql`;
+export const IA_FOOD_SCAN_URL = `${API_BASE_URL}/api/v1/ia/food-scan`;
+export const IA_HEALTH_URL = `${API_BASE_URL}/api/v1/ia/health`;
 
 // Tamaño máximo de imagen aceptado por el backend de IA (5 MB).
 export const IA_IMAGE_MAX_BYTES = 5 * 1024 * 1024;

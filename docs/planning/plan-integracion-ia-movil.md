@@ -46,7 +46,7 @@ probado en un teléfono físico.
 
 ## 3. Contrato del endpoint de IA
 
-`POST {IA_BASE_URL}/api/v1/food-scan` · `Content-Type: multipart/form-data` ·
+`POST {API_BASE_URL}/api/v1/ia/food-scan` · `Content-Type: multipart/form-data` ·
 Cabecera `X-API-Key: <clave>`.
 
 **Request (form-data):**
@@ -109,8 +109,7 @@ Respuesta JSON → pantalla de Resultado
 
 | Parámetro | Valor | Dónde |
 |-----------|-------|-------|
-| `IA_BASE_URL` | `http://192.168.1.148:8001` | `src/constants/config.ts` |
-| `IA_API_KEY` | igual a `API_KEY` del `.env` del backend | `src/constants/config.ts` |
+| `API_BASE_URL` | URL publica del API Gateway | `src/constants/config.ts` |
 | Backend bind | `uvicorn --host 0.0.0.0 --port 8001` | PC servidora |
 | Firewall | inbound TCP 8001 | Windows |
 | Red | teléfono y PC en la **misma Wi-Fi** | — |
@@ -176,7 +175,7 @@ Verificación: el teléfono debe abrir `http://192.168.1.148:8001/api/v1/health`
 
 - `src/services/ia.service.ts` — `scanFood()`, `checkIaHealth()`, tipos
   (`FoodScanResult`, `Semaforo`, `NutrientInfo`, `FoodPrediction`), `IaServiceError`.
-- `src/constants/config.ts` — `GRAPHQL_URL`, `IA_BASE_URL`, `IA_API_KEY`.
+- `src/constants/config.ts` — `API_BASE_URL`, `GRAPHQL_URL`, `IA_FOOD_SCAN_URL`.
 - `src/navigation/types.ts` — params de `ScannerCamera`/`ScannerResult`.
 - `app.json` — plugins/permiso de `expo-camera` y `expo-image-picker`.
 
